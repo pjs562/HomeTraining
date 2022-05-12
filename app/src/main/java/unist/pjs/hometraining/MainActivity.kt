@@ -9,7 +9,6 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
@@ -144,7 +143,11 @@ class MainActivity : AppCompatActivity() {
         }
         binding.tvAddTime.setOnClickListener {
             finalTime += 20000L
-            startCountDown(finalTime)
+            when(binding.tvPause.text){
+                "RESUME" -> startCountDown(finalTime)
+
+                else -> long2Time(finalTime)
+            }
         }
         binding.tvPrev.setOnClickListener {
             countDownTimer.cancel()
