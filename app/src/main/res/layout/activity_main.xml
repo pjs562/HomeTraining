@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <ImageView
+        android:id="@+id/iv_gif"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tb_appbar"/>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="01:00"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_gif" />
+
+    <TextView
+        android:id="@+id/tv_add_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:background="@drawable/ripple_button3"
+        android:paddingVertical="5dp"
+        android:paddingHorizontal="10dp"
+        android:text="+20s"
+        android:layout_marginLeft="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_title"
+        app:layout_constraintLeft_toRightOf="@id/tv_time"
+        app:layout_constraintTop_toBottomOf="@id/iv_gif" />
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="INCLINE PUSH-UPS"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_count"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_time" />
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="x16"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tv_pause"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <TextView
+        android:id="@+id/tv_pause"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="51dp"
+        android:background="@drawable/ripple_button"
+        android:elevation="9dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:paddingVertical="15dp"
+        android:text="@string/start"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/tv_prev"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_count" />
+
+    <TextView
+        android:id="@+id/tv_prev"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_button2"
+        android:elevation="9dp"
+        android:paddingVertical="15dp"
+        android:text="@string/prev"
+        android:textColor="@color/gray"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="15dp"
+        android:drawableLeft="@drawable/ic_baseline_skip_previous_24"
+        app:layout_constraintRight_toLeftOf="@id/tv_next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_pause" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:background="@color/light_gray"
+        app:layout_constraintStart_toEndOf="@id/tv_prev"
+        app:layout_constraintEnd_toStartOf="@id/tv_next"
+        app:layout_constraintTop_toTopOf="@id/tv_prev"
+        app:layout_constraintBottom_toBottomOf="@id/tv_prev"/>
+    <TextView
+        android:id="@+id/tv_next"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_button2"
+        android:elevation="9dp"
+        android:paddingHorizontal="30dp"
+        android:paddingVertical="15dp"
+        android:text="@string/next"
+        android:textColor="@color/gray"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:drawableLeft="@drawable/ic_baseline_skip_next_24"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/tv_prev"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_pause" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tb_appbar"
+        style="@style/ToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_speaker" />
+</androidx.constraintlayout.widget.ConstraintLayout>

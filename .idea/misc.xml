@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/bg_gray_radius_10dp.xml" value="0.374" />
+        <entry key="app/src/main/res/drawable/bg_main_blue_radius_10dp.xml" value="0.2075" />
+        <entry key="app/src/main/res/drawable/ic_arrow.xml" value="0.2655" />
+        <entry key="app/src/main/res/drawable/ic_baseline_skip_next_24.xml" value="0.374" />
+        <entry key="app/src/main/res/drawable/ic_baseline_skip_previous_24.xml" value="0.374" />
+        <entry key="app/src/main/res/drawable/ic_baseline_volume_up_24.xml" value="0.2075" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3925" />
+        <entry key="app/src/main/res/drawable/ripple_button.xml" value="0.2075" />
+        <entry key="app/src/main/res/drawable/ripple_button2.xml" value="0.374" />
+        <entry key="app/src/main/res/drawable/ripple_button3.xml" value="0.374" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.48178405761718757" />
+        <entry key="app/src/main/res/menu/menu_speaker.xml" value="0.3880208333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

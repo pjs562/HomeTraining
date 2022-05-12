@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">HomeTraining</string>
+    <string name="pause">PAUSE</string>
+    <string name="start">START</string>
+    <string name="prev">Previous</string>
+    <string name="next">Next</string>
+    <string name="menu_speaker">speaker</string>
+</resources>
