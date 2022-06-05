@@ -8,11 +8,14 @@ import android.os.CountDownTimer
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
 import unist.pjs.hometraining.databinding.ActivityMainBinding
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,16 +26,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listener: RecognitionListener
     private lateinit var countDownTimer: CountDownTimer
 
+    private var tts: TextToSpeech? = null
+
     private val defaultRemainedAuthTime: Long = 60000L
     private var finalTime: Long = defaultRemainedAuthTime
-
+    private var currentPage: Int = 1
+    private var currentString: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        Glide.with(this).load(R.raw.incline_pushup).into(binding.ivGif)
 
         ActivityCompat.requestPermissions(
             this, arrayOf(
@@ -41,6 +45,18 @@ class MainActivity : AppCompatActivity() {
             ), permission
         )
 
+        countDownTimer = object : CountDownTimer(finalTime, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                finalTime = millisUntilFinished
+                long2Time(finalTime)
+            }
+
+            override fun onFinish() {
+                binding.tvTime.text = "00:00"
+            }
+
+        }
+        switchPage(currentPage)
         i = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, applicationContext.packageName) // 여분의 키
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US") // 언어 설정
@@ -48,14 +64,18 @@ class MainActivity : AppCompatActivity() {
         listener = object : RecognitionListener {
             override fun onReadyForSpeech(p0: Bundle?) {
                 // 말하기 시작할 준비가 되면 호출
+                Log.e("TEST", "onReadyForSpeech: $p0")
             }
 
             override fun onBeginningOfSpeech() {
                 // 말하기 시작했을 때 호출
+                Log.e("TEST", "onBeginningOfSpeech")
             }
 
             override fun onRmsChanged(p0: Float) {
                 // 입력받는 소리의 크기를 알려줌
+                if (p0 > 5)
+                    Log.e("TEST", "onRmsChanged: $p0")
             }
 
             override fun onBufferReceived(p0: ByteArray?) {
@@ -64,10 +84,12 @@ class MainActivity : AppCompatActivity() {
 
             override fun onEndOfSpeech() {
                 // 말하기를 중지하면 호출
+                Log.e("TEST", "onEndOfSpeech")
             }
 
             override fun onError(p0: Int) {
                 // 네트워크 또는 인식 오류가 발생했을 때 호출
+                Log.e("TEST", "onError")
                 var message = ""
 
                 message = when (p0) {
@@ -83,26 +105,49 @@ class MainActivity : AppCompatActivity() {
                     else -> "알 수 없는 오류"
                 }
 
-                Toast.makeText(applicationContext, "에러 발생: $message", Toast.LENGTH_SHORT).show()
+                if (message != "찾을 수 없음")
+                    Toast.makeText(applicationContext, "에러 발생: $message", Toast.LENGTH_SHORT).show()
+                stt()
             }
 
             override fun onResults(p0: Bundle?) {
+                Log.e("TEST", "onResults: $p0")
                 // 인식 결과가 준비되면 호출
                 // 말을 하면 ArrayList 에 단어를 넣고 textView 에 단어를 이어줌
                 val matches = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).orEmpty()
+                var sign = "+"
                 for (i in matches.indices) {
-                    Log.e("TEST", "TEST: ${matches[i]}")
+                    Log.e("TEST", "matches[$i]: ${matches[i]}")
+                    if (matches[i].contains("-")) {
+                        sign = "-"
+                    } else if (matches[i].contains("+")) {
+                        sign = "+"
+                    } else if (matches[i].contains("explain")) {
+                        ttsSpeak(currentString)
+                    } else if (matches[i].contains("start") || matches[i].contains("resume")) {
+                        binding.tvPause.text = "PAUSE"
+                        startCountDown(finalTime)
+                    } else if (matches[i].contains("pause") || matches[i].contains("stop")) {
+                        binding.tvPause.text = "RESUME"
+                        countDownTimer.cancel()
+                    } else if (matches[i].contains("next")) {
+                        binding.tvNext.performClick()
+                    } else if (matches[i].contains("previous")|| matches[i].contains("back")) {
+                        binding.tvPrev.performClick()
+                    }
                     val number = matches[i].replace("[^0-9]".toRegex(), "")
-                    Log.e("TEST", "TEST: $number")
+                    Log.e("TEST", "number: $number")
                     if (number.isNotEmpty()) {
-                        finalTime += 1000 * number.toLong()
-                        when(binding.tvPause.text){
-                            "RESUME" -> startCountDown(finalTime)
+                        if (sign == "-") finalTime -= 1000 * number.toLong() else finalTime += 1000 * number.toLong()
+
+                        when (binding.tvPause.text) {
+                            "PAUSE" -> startCountDown(finalTime)
 
                             else -> long2Time(finalTime)
                         }
                     }
                 }
+                stt()
             }
 
             override fun onPartialResults(p0: Bundle?) {
@@ -111,19 +156,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onEvent(p0: Int, p1: Bundle?) {
                 // 향후 이벤트를 추가하기 위해 예약
+                Log.e("TEST", "onEvent p0: $p0, p1: $p1")
             }
         }
-        countDownTimer = object : CountDownTimer(finalTime, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                finalTime = millisUntilFinished
-                long2Time(finalTime)
-            }
 
-            override fun onFinish() {
-                binding.tvTime.text = "00:00"
-            }
-
-        }
+        initTextToSpeech()
 
         binding.tvPause.setOnClickListener {
             when (binding.tvPause.text) {
@@ -143,25 +180,33 @@ class MainActivity : AppCompatActivity() {
         }
         binding.tvAddTime.setOnClickListener {
             finalTime += 20000L
-            when(binding.tvPause.text){
-                "RESUME" -> startCountDown(finalTime)
+            when (binding.tvPause.text) {
+                "PAUSE" -> startCountDown(finalTime)
 
-                else -> long2Time(finalTime)
+                else -> {
+                    long2Time(finalTime)
+                }
             }
         }
         binding.tvPrev.setOnClickListener {
-            countDownTimer.cancel()
+            currentPage = if (currentPage == 1) 7 else currentPage - 1
+            switchPage(currentPage)
         }
         binding.tvNext.setOnClickListener {
-            Toast.makeText(applicationContext, "Next", Toast.LENGTH_SHORT).show()
+            currentPage = if (currentPage == 7) 1 else currentPage + 1
+            switchPage(currentPage)
         }
         binding.tbAppbar.apply {
             setOnMenuItemClickListener {
-                stt()
+                ttsSpeak(currentString)
                 true
             }
+            setNavigationOnClickListener {
+                currentPage = if (currentPage == 1) 7 else currentPage - 1
+                switchPage(currentPage)
+            }
         }
-
+        stt()
     }
 
     private fun startCountDown(time: Long) {
@@ -174,8 +219,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 binding.tvTime.text = "00:00"
+                binding.tvNext.performClick()
             }
-
         }
         countDownTimer.start()
     }
@@ -184,14 +229,99 @@ class MainActivity : AppCompatActivity() {
         speechRecognizer =
             SpeechRecognizer.createSpeechRecognizer(this) // 새 SpeechRecognizer 를 만드는 팩토리 메서드
         speechRecognizer.setRecognitionListener(listener) // 리스너 설정
-        speechRecognizer.startListening(intent) // 듣기 시작
+        speechRecognizer.startListening(i) // 듣기 시작
     }
 
-    private fun long2Time(finalTime: Long){
+    private fun long2Time(finalTime: Long) {
         val minute = finalTime / 60000
         val second = finalTime % 60000 / 1000
         val remainTime = if (second < 10) "0$minute:0$second" else "0$minute:$second"
 
         binding.tvTime.text = remainTime
+    }
+
+    private fun initTextToSpeech() {
+        tts = TextToSpeech(this) {
+            if (it == TextToSpeech.SUCCESS) {
+                val result = tts?.setLanguage(Locale.ENGLISH)
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(this, "Language not supported", Toast.LENGTH_SHORT).show()
+                    return@TextToSpeech
+                }
+                Toast.makeText(this, "TTS setting success", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "TTS init failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun ttsSpeak(strTTS: String) {
+        tts?.setSpeechRate(0.8f);    // 읽는 속도는 기본 설정
+        tts?.speak(strTTS, TextToSpeech.QUEUE_ADD, null, null)
+    }
+
+    private fun switchPage(number: Int) {
+        when (number) {
+            1 -> {
+                binding.tvTitle.text = "INCLINE PUSH-UPS"
+                Glide.with(this).load(R.raw.incline_pushup).into(binding.ivGif)
+                binding.tvCount.visibility = View.VISIBLE
+                binding.ivGif.visibility = View.VISIBLE
+                binding.tvPause.text = "PAUSE"
+                finalTime = 60000L
+                currentString = resources.getString(R.string.incline_push_up)
+            }
+            3 -> {
+                binding.tvTitle.text = "KNEE PUSH-UPS"
+                Glide.with(this).load(R.raw.knee_pushup).into(binding.ivGif)
+                binding.tvCount.visibility = View.VISIBLE
+                binding.ivGif.visibility = View.VISIBLE
+                binding.tvPause.text = "PAUSE"
+                finalTime = 60000L
+                currentString = resources.getString(R.string.knee_push_up)
+            }
+            5 -> {
+                binding.tvTitle.text = "PUSH-UPS"
+                Glide.with(this).load(R.raw.pushup).into(binding.ivGif)
+                binding.tvCount.visibility = View.VISIBLE
+                binding.ivGif.visibility = View.VISIBLE
+                binding.tvPause.text = "PAUSE"
+                finalTime = 60000L
+                currentString = resources.getString(R.string.push_up)
+            }
+            7 -> {
+                binding.tvTitle.text = "WIDE ARM PUSH-UPS"
+                Glide.with(this).load(R.raw.wide_arm_pushup).into(binding.ivGif)
+                binding.tvCount.visibility = View.VISIBLE
+                binding.ivGif.visibility = View.VISIBLE
+                binding.tvPause.text = "PAUSE"
+                finalTime = 60000L
+                currentString = resources.getString(R.string.wide_arm_push_up)
+            }
+            else -> {
+                binding.tvTitle.text = "REST"
+                binding.tvCount.visibility = View.GONE
+                binding.ivGif.visibility = View.GONE
+                binding.tvPause.text = "PAUSE"
+                finalTime = 20000L
+                currentString = resources.getString(R.string.rest)
+            }
+        }
+        startCountDown(finalTime)
+    }
+
+    override fun onStop() {
+        Log.e("TEST", "onStop")
+        tts?.let {
+            it.stop()
+            it.shutdown()
+        }
+        speechRecognizer.destroy()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        Log.e("TEST", "onDestroy")
+        super.onDestroy()
     }
 }
