@@ -156,7 +156,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onEvent(p0: Int, p1: Bundle?) {
                 // 향후 이벤트를 추가하기 위해 예약
-                Log.e("TEST", "onEvent p0: $p0, p1: $p1")
             }
         }
 
@@ -248,7 +247,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Language not supported", Toast.LENGTH_SHORT).show()
                     return@TextToSpeech
                 }
-                Toast.makeText(this, "TTS setting success", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "TTS init failed", Toast.LENGTH_SHORT).show()
             }
@@ -311,7 +309,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        Log.e("TEST", "onStop")
         tts?.let {
             it.stop()
             it.shutdown()
@@ -321,7 +318,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Log.e("TEST", "onDestroy")
         super.onDestroy()
     }
 }
