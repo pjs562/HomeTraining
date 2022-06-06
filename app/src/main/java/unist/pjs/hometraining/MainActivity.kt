@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                     } else if (matches[i].contains("start") || matches[i].contains("resume")|| matches[i].contains("Prism", true) || matches[i].contains("part", true)) {
                         binding.tvPause.text = "PAUSE"
                         startCountDown(finalTime)
-                    } else if (matches[i].contains("pause") || matches[i].contains("stop") || matches[i].contains("cost") || matches[i].contains("post")) {
+                    } else if (matches[i].contains("pause") || matches[i].contains("stop") || matches[i].contains("cost") || matches[i].contains("post")||matches[i].contains("pulse")) {
                         binding.tvPause.text = "RESUME"
                         countDownTimer.cancel()
                     } else if (matches[i].contains("next")||matches[i].contains("text")||matches[i].contains("maxed")) {
@@ -204,13 +204,20 @@ class MainActivity : AppCompatActivity() {
             switchPage(currentPage)
         }
         binding.tbAppbar.apply {
-            setOnMenuItemClickListener {
-                ttsSpeak(currentString)
-                true
+            setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.menu_speaker -> ttsSpeak(currentString)
+                    R.id.menu_instruction -> binding.tvExplain.visibility = View.VISIBLE
+                }
+                false
             }
             setNavigationOnClickListener {
-                currentPage = if (currentPage == 1) 7 else currentPage - 1
-                switchPage(currentPage)
+                if(binding.tvExplain.visibility == View.VISIBLE)
+                    binding.tvExplain.visibility = View.GONE
+                else{
+                    currentPage = if (currentPage == 1) 7 else currentPage - 1
+                    switchPage(currentPage)
+                }
             }
         }
         stt()

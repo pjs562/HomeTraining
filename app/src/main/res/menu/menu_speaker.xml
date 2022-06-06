@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_baseline_volume_up_24"
         android:title="@string/menu_speaker"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_instruction"
+        android:icon="@drawable/ic_baseline_assignment_24"
+        android:title="@string/menu_instruction"
+        app:showAsAction="ifRoom" />
 </menu>

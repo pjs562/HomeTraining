@@ -5,6 +5,7 @@
     <string name="prev">Previous</string>
     <string name="next">Next</string>
     <string name="menu_speaker">speaker</string>
+    <string name="menu_instruction">instruction</string>
     <string name="incline_push_up">
         incline push ups.
         Begin in the regular push-up position but with your hands elevated on a chair on bench.
@@ -26,4 +27,13 @@
         then push your body up and down.
         Remember to keep your body straight.</string>
     <string name="rest">Get some rest.</string>
+    <string name="explain">
+        you can control home training app by your voice\n\nandroid setting language should be english(United States)\n\n
+        \"plus number\" can increase remain time\n\n
+        \"minus number\" can reduce remain time\n\n
+        \"explain\" can explain about exercise\n\n
+        \"next\" can go to next slide\n\n
+        \"previous\" can go to previous slide\n\n
+        \"pause\", \"stop\" stops time decreasing\n\n
+        \"start\" start time decreasing</string>
 </resources>
