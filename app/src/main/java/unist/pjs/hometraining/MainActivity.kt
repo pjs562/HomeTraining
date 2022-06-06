@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onError(p0: Int) {
+                speechRecognizer.startListening(i)
                 // 네트워크 또는 인식 오류가 발생했을 때 호출
                 Log.e("TEST", "onError")
                 var message = ""
@@ -107,10 +108,10 @@ class MainActivity : AppCompatActivity() {
 
                 if (message != "찾을 수 없음")
                     Toast.makeText(applicationContext, "에러 발생: $message", Toast.LENGTH_SHORT).show()
-                stt()
             }
 
             override fun onResults(p0: Bundle?) {
+                speechRecognizer.startListening(i)
                 Log.e("TEST", "onResults: $p0")
                 // 인식 결과가 준비되면 호출
                 // 말을 하면 ArrayList 에 단어를 넣고 textView 에 단어를 이어줌
@@ -118,24 +119,32 @@ class MainActivity : AppCompatActivity() {
                 var sign = "+"
                 for (i in matches.indices) {
                     Log.e("TEST", "matches[$i]: ${matches[i]}")
-                    if (matches[i].contains("-")) {
+                    if (matches[i].contains("-") || matches[i].contains("mine") || matches[i].contains("minor")) {
                         sign = "-"
-                    } else if (matches[i].contains("+")) {
+                    } else if (matches[i].contains("+") || matches[i].contains("pass")) {
                         sign = "+"
-                    } else if (matches[i].contains("explain")) {
+                    } else if (matches[i].contains("explain")||matches[i].contains("play")||matches[i].contains("spain")||matches[i].contains("six flags")) {
                         ttsSpeak(currentString)
-                    } else if (matches[i].contains("start") || matches[i].contains("resume")) {
+                    } else if (matches[i].contains("start") || matches[i].contains("resume")|| matches[i].contains("Prism", true) || matches[i].contains("part", true)) {
                         binding.tvPause.text = "PAUSE"
                         startCountDown(finalTime)
-                    } else if (matches[i].contains("pause") || matches[i].contains("stop")) {
+                    } else if (matches[i].contains("pause") || matches[i].contains("stop") || matches[i].contains("cost") || matches[i].contains("post")) {
                         binding.tvPause.text = "RESUME"
                         countDownTimer.cancel()
-                    } else if (matches[i].contains("next")) {
+                    } else if (matches[i].contains("next")||matches[i].contains("text")||matches[i].contains("maxed")) {
                         binding.tvNext.performClick()
-                    } else if (matches[i].contains("previous")|| matches[i].contains("back")) {
+                    } else if (matches[i].contains("previous")|| matches[i].contains("back") || matches[i].contains("pretty girls") || matches[i].contains("reviews") || matches[i].contains("progressed")|| matches[i].contains("Takis")|| matches[i].contains("prepass")|| matches[i].contains("prettiest")|| matches[i].contains("fitness")||matches[i].contains("videos")) {
                         binding.tvPrev.performClick()
                     }
-                    val number = matches[i].replace("[^0-9]".toRegex(), "")
+
+                    var number = matches[i].replace("[^0-9]".toRegex(), "")
+                    if(matches[i].contains("trench", true) || matches[i].contains("french", true) || matches[i].contains("trance", true) || matches[i].contains("trent", true) || matches[i].contains("prince", true)){
+                        number = "20"
+                    } else if(matches[i].contains("search", true) || matches[i].contains("certain") || matches[i].contains("soti")){
+                        number = "30"
+                    } else if(matches[i].contains("Fortune", true) || matches[i].contains("perky", true) || matches[i].contains("pretty", true)|| matches[i].contains("proky", true)){
+                        number = "40"
+                    }
                     Log.e("TEST", "number: $number")
                     if (number.isNotEmpty()) {
                         if (sign == "-") finalTime -= 1000 * number.toLong() else finalTime += 1000 * number.toLong()
@@ -147,7 +156,6 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-                stt()
             }
 
             override fun onPartialResults(p0: Bundle?) {
